@@ -31,6 +31,19 @@ export default function App() {
     setRepositories([...repositories]);
   }
 
+  function compareLikes(likes) {
+    switch(likes){
+      case 0:
+        return 'Ninguém curtiu ainda. Seja o primeiro!';
+      break;
+      case 1:
+        return `${likes} curtida`;
+      break;
+      default:
+        return `${likes} curtidas`
+    }
+  }
+
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
@@ -59,7 +72,7 @@ export default function App() {
                   // Remember to replace "1" below with repository ID: {`repository-likes-${repository.id}`}
                   testID={`repository-likes-${repository.id}`}
                 >
-                  {repository.likes === 1 ? `${repository.likes} curtida` : `${repository.likes} curtidas`}
+                  {compareLikes(repository.likes)}
                 </Text>
               </View>
 
