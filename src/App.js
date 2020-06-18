@@ -10,7 +10,11 @@ import {
   TouchableOpacity
 } from "react-native";
 
+import Icon from 'react-native-vector-icons/AntDesign'
+Icon.loadFont();
+
 import api from './services/api';
+import { wait } from "@testing-library/react-native";
 
 export default function App() {
   const [repositories, setRepositories] = useState([]);
@@ -20,6 +24,20 @@ export default function App() {
       setRepositories(response.data);
     })
   }, []);
+
+  async function handleAddRepository(){
+    const response = await api.post('repositories', {
+      title: `Repository ${repositories.length+1}`,
+	    url: "https://github.com/rafaelsza/js-starter-rocketseat",
+	    techs: ["Android SDK","Node", "React", "Express", "Babel", "WebPack"]
+    });
+
+    if(response.status === 200){
+      const repository = response.data;
+
+      setRepositories([...repositories, repository]);
+    }
+  }
 
   async function handleLikeRepository(id) {
     const response = await api.post(`repositories/${id}/like`);
@@ -69,13 +87,26 @@ export default function App() {
                 {repository.title}
               </Text>
 
-              <View style={styles.techsContainer}>
+              {/* <View style={styles.techsContainer}>
                 {repository.techs.map(tech => (
                   <Text key={tech} style={styles.tech}>
                     {tech}
                   </Text>
                 ))}                
-              </View>
+              </View> */}
+
+              <FlatList
+                data={repository.techs}
+                keyExtractor={tech => tech}
+                style={styles.techsContainer}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                renderItem={({item: tech}) => (
+                  <Text key={tech} style={styles.tech}>
+                    {tech}
+                  </Text>
+                )}
+              />
 
               <View style={styles.likesContainer}>
                 <Text
@@ -89,28 +120,41 @@ export default function App() {
 
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
-                  style={styles.button}
+                  style={styles.buttonLike}
                   activeOpacity={0.7}
                   onPress={() => handleLikeRepository(repository.id)}
                   testID={`like-button-${repository.id}`}
                 >
+                  <Icon name="like2" size={15} color="white" style={styles.iconButtons}/>
                   <Text style={styles.buttonText}>
-                    
                     Curtir
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.button}
+                  style={styles.buttonDelete}
                   activeOpacity={0.7}
                   onPress={() => handleDeleteRepository(repository.id)}
                 >
-                  <Text style={styles.buttonDeleteText}>Remover</Text>
+                  <Icon name="delete" size={15} color="white" style={styles.iconButtons}/>
+                  <Text style={styles.buttonText}>
+                    Remover
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
           )}
         />
+        <TouchableOpacity
+          style={styles.buttonAdd}
+          activeOpacity={0.7}
+          onPress={() => handleAddRepository()}
+        >
+          <Icon name="pluscircleo" size={15} color="white" style={styles.iconButtons}/>
+          <Text style={styles.buttonText}>
+            Adicionar repositório
+          </Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </>
   );
@@ -122,10 +166,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#7159c1",
   },
   repositoryContainer: {
-    marginBottom: 15,
+    marginTop: 15,
     marginHorizontal: 15,
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 15,
+    borderRadius: 5,
   },
   repository: {
     fontSize: 32,
@@ -142,7 +187,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#04d361",
     paddingHorizontal: 10,
     paddingVertical: 5,
-    color: "#fff",
+    color: "black",
+    borderRadius: 3,
   },
   likesContainer: {
     marginTop: 15,
@@ -154,31 +200,56 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 10,
   },
-  button: {
-    marginTop: 10,
-  },
-  buttonText: {
-    fontSize: 14,
-    width: 'auto',
-    fontWeight: "bold",
-    marginRight: 10,
-    color: "#fff",
-    backgroundColor: "#7159c1",
-    padding: 15,
-  },
-
-  buttonDeleteText: {
-    fontSize: 14,
-    width: 'auto',
-    fontWeight: "bold",
-    marginRight: 10,
-    color: "#fff",
-    backgroundColor: "#e8254f",
-    padding: 15,
-  },
 
   buttonsContainer: {
     flexDirection: "row",
     marginTop: 10,
+  },
+
+  buttonLike: {
+    marginTop: 10,
+    marginRight: 10,
+    backgroundColor: "#365ec2",
+    borderRadius: 3,
+    height: 35,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  buttonDelete: {
+    marginTop: 10,
+    backgroundColor: "#d11f43",
+    borderRadius: 3,
+    height: 35,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  buttonAdd: {
+    marginHorizontal: 15,
+    marginVertical: 15,
+    backgroundColor: '#2b8c4c',
+    borderRadius: 5,
+    height: 35,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: 'white',
+    borderStyle: 'solid',
+    borderWidth: 2,
+  },
+
+  buttonText: {
+    marginHorizontal: 10,
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 15,
+    fontFamily: 'Roboto_500Medium',
+  },
+
+  iconButtons: {
+    marginLeft: 10,
   }
 });
