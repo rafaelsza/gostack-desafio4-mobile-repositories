@@ -24,11 +24,22 @@ export default function App() {
   async function handleLikeRepository(id) {
     const response = await api.post(`repositories/${id}/like`);
 
-    const indexRepo = repositories.findIndex(repo => repo.id === id)
+    const indexRepo = repositories.findIndex(repo => repo.id === id);
 
     repositories[indexRepo] = response.data;
 
     setRepositories([...repositories]);
+  }
+
+  async function handleDeleteRepository(id){
+    const response = await api.delete(`repositories/${id}`);
+
+    const indexRepo = repositories.findIndex(repo => repo.id === id);
+
+    if(response.status === 204){
+      repositories.splice(indexRepo, 1);
+      setRepositories([...repositories]);
+    }
   }
 
   function compareLikes(likes) {
@@ -76,52 +87,30 @@ export default function App() {
                 </Text>
               </View>
 
-              <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.7}
-                onPress={() => handleLikeRepository(repository.id)}
-                testID={`like-button-${repository.id}`}
-              >
-                <Text style={styles.buttonText}>
-                  Curtir
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={styles.button}
+                  activeOpacity={0.7}
+                  onPress={() => handleLikeRepository(repository.id)}
+                  testID={`like-button-${repository.id}`}
+                >
+                  <Text style={styles.buttonText}>
+                    
+                    Curtir
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.button}
+                  activeOpacity={0.7}
+                  onPress={() => handleDeleteRepository(repository.id)}
+                >
+                  <Text style={styles.buttonDeleteText}>Remover</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         />
-
-
-        {/* <View style={styles.repositoryContainer}>
-          <Text style={styles.repository}>Repository 1</Text>
-
-          <View style={styles.techsContainer}>
-            <Text style={styles.tech}>
-              ReactJS
-            </Text>
-            <Text style={styles.tech}>
-              Node.js
-            </Text>
-          </View>
-
-          <View style={styles.likesContainer}>
-            <Text
-              style={styles.likeText}
-              // Remember to replace "1" below with repository ID: {`repository-likes-${repository.id}`}
-              testID={`repository-likes-1`}
-            >
-              3 curtidas
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleLikeRepository(1)}
-            // Remember to replace "1" below with repository ID: {`like-button-${repository.id}`}
-            testID={`like-button-1`}
-          >
-            <Text style={styles.buttonText}>Curtir</Text>
-          </TouchableOpacity>
-        </View> */}
       </SafeAreaView>
     </>
   );
@@ -170,10 +159,26 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
+    width: 'auto',
     fontWeight: "bold",
     marginRight: 10,
     color: "#fff",
     backgroundColor: "#7159c1",
     padding: 15,
   },
+
+  buttonDeleteText: {
+    fontSize: 14,
+    width: 'auto',
+    fontWeight: "bold",
+    marginRight: 10,
+    color: "#fff",
+    backgroundColor: "#e8254f",
+    padding: 15,
+  },
+
+  buttonsContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+  }
 });
