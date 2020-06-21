@@ -7,14 +7,14 @@ import {
   Text,
   StatusBar,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking
 } from "react-native";
 
 import Icon from 'react-native-vector-icons/AntDesign'
 Icon.loadFont();
 
 import api from './services/api';
-import { wait } from "@testing-library/react-native";
 
 export default function App() {
   const [repositories, setRepositories] = useState([]);
@@ -25,14 +25,14 @@ export default function App() {
     })
   }, []);
 
-  async function handleAddRepository(){
+  async function handleAddRepository() {
     const response = await api.post('repositories', {
-      title: `Repository ${repositories.length+1}`,
-	    url: "https://github.com/rafaelsza/js-starter-rocketseat",
-	    techs: ["Android SDK","Node", "React", "Express", "Babel", "WebPack"]
+      title: `Repository ${repositories.length + 1}`,
+      url: "https://github.com/rafaelsza/js-starter-rocketseat",
+      techs: ["Android SDK", "Node", "React", "Express", "Babel", "WebPack"]
     });
 
-    if(response.status === 200){
+    if (response.status === 200) {
       const repository = response.data;
 
       setRepositories([...repositories, repository]);
@@ -49,27 +49,29 @@ export default function App() {
     setRepositories([...repositories]);
   }
 
-  async function handleDeleteRepository(id){
+  async function handleDeleteRepository(id) {
     const response = await api.delete(`repositories/${id}`);
 
     const indexRepo = repositories.findIndex(repo => repo.id === id);
 
-    if(response.status === 204){
+    if (response.status === 204) {
       repositories.splice(indexRepo, 1);
       setRepositories([...repositories]);
     }
   }
 
+  async function handleOpenURL(url){
+    await Linking.openURL(url); 
+  }
+
   function compareLikes(likes) {
-    switch(likes){
+    switch (likes) {
       case 0:
         return 'Ninguém curtiu ainda. Seja o primeiro!';
-      break;
       case 1:
         return `${likes} curtida`;
-      break;
       default:
-        return `${likes} curtidas`
+        return `${likes} curtidas`;
     }
   }
 
@@ -101,7 +103,7 @@ export default function App() {
                 style={styles.techsContainer}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-                renderItem={({item: tech}) => (
+                renderItem={({ item: tech }) => (
                   <Text key={tech} style={styles.tech}>
                     {tech}
                   </Text>
@@ -125,9 +127,20 @@ export default function App() {
                   onPress={() => handleLikeRepository(repository.id)}
                   testID={`like-button-${repository.id}`}
                 >
-                  <Icon name="like2" size={15} color="white" style={styles.iconButtons}/>
+                  <Icon name="like2" size={15} color="white" style={styles.iconButtons} />
                   <Text style={styles.buttonText}>
                     Curtir
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.buttonGithub}
+                  activeOpacity={0.7}
+                  onPress={() => handleOpenURL(repository.url)}
+                >
+                  <Icon name="github" size={15} color="white" style={styles.iconButtons} />
+                  <Text style={styles.buttonText}>
+                    GitHub
                   </Text>
                 </TouchableOpacity>
 
@@ -136,7 +149,7 @@ export default function App() {
                   activeOpacity={0.7}
                   onPress={() => handleDeleteRepository(repository.id)}
                 >
-                  <Icon name="delete" size={15} color="white" style={styles.iconButtons}/>
+                  <Icon name="delete" size={15} color="white" style={styles.iconButtons} />
                   <Text style={styles.buttonText}>
                     Remover
                   </Text>
@@ -150,7 +163,7 @@ export default function App() {
           activeOpacity={0.7}
           onPress={() => handleAddRepository()}
         >
-          <Icon name="pluscircleo" size={15} color="white" style={styles.iconButtons}/>
+          <Icon name="pluscircleo" size={15} color="white" style={styles.iconButtons} />
           <Text style={styles.buttonText}>
             Adicionar repositório
           </Text>
@@ -180,6 +193,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
   },
+  
   tech: {
     fontSize: 12,
     fontWeight: "bold",
@@ -190,11 +204,13 @@ const styles = StyleSheet.create({
     color: "black",
     borderRadius: 3,
   },
+
   likesContainer: {
     marginTop: 15,
     flexDirection: "row",
     justifyContent: "space-between",
   },
+
   likeText: {
     fontSize: 14,
     fontWeight: "bold",
@@ -203,11 +219,10 @@ const styles = StyleSheet.create({
 
   buttonsContainer: {
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 20,
   },
 
   buttonLike: {
-    marginTop: 10,
     marginRight: 10,
     backgroundColor: "#365ec2",
     borderRadius: 3,
@@ -217,8 +232,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  buttonGithub: {
+    backgroundColor: "black",
+    borderRadius: 3,
+    height: 35,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   buttonDelete: {
-    marginTop: 10,
+    marginLeft: 10,
     backgroundColor: "#d11f43",
     borderRadius: 3,
     height: 35,
