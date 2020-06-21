@@ -11,8 +11,10 @@ import {
   Linking
 } from "react-native";
 
-import Icon from 'react-native-vector-icons/AntDesign'
-Icon.loadFont();
+import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
+IconAntDesign.loadFont();
+IconMaterial.loadFont();
 
 import api from './services/api';
 
@@ -127,7 +129,7 @@ export default function App() {
                   onPress={() => handleLikeRepository(repository.id)}
                   testID={`like-button-${repository.id}`}
                 >
-                  <Icon name="like2" size={15} color="white" style={styles.iconButtons} />
+                  <IconAntDesign name="like1" size={15} color="white" style={styles.iconButtons} />
                   <Text style={styles.buttonText}>
                     Curtir
                   </Text>
@@ -138,7 +140,7 @@ export default function App() {
                   activeOpacity={0.7}
                   onPress={() => handleOpenURL(repository.url)}
                 >
-                  <Icon name="github" size={15} color="white" style={styles.iconButtons} />
+                  <IconAntDesign name="github" size={15} color="white" style={styles.iconButtons} />
                   <Text style={styles.buttonText}>
                     GitHub
                   </Text>
@@ -149,7 +151,7 @@ export default function App() {
                   activeOpacity={0.7}
                   onPress={() => handleDeleteRepository(repository.id)}
                 >
-                  <Icon name="delete" size={15} color="white" style={styles.iconButtons} />
+                  <IconMaterial name="delete" size={18} color="white" style={styles.iconButtons} />
                   <Text style={styles.buttonText}>
                     Remover
                   </Text>
@@ -163,7 +165,7 @@ export default function App() {
           activeOpacity={0.7}
           onPress={() => handleAddRepository()}
         >
-          <Icon name="pluscircleo" size={15} color="white" style={styles.iconButtons} />
+          <IconMaterial name="add-box" size={15} color="white" style={styles.iconButtons} />
           <Text style={styles.buttonText}>
             Adicionar repositório
           </Text>
